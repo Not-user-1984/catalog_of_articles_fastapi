@@ -1,0 +1,6 @@
+alembic
+asyncpg
+fastapi[all]
+python-dotenv
+sqlalchemy
+fastapi-users[sqlalchemy]
