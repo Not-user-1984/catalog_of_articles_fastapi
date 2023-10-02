@@ -1,95 +1,57 @@
-import datetime
-from enum import Enum as PyEnum
+from datetime import datetime
 
-from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
-                        String, Table)
+from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
+from sqlalchemy import (TIMESTAMP, Boolean, Column, DateTime, ForeignKey,
+                        Integer, String, Table)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 Base = declarative_base()
 
 
-class OrderStatus(PyEnum):
-    started = 'started'
-    ended = 'ended'
-    in_process = 'in process'
-    awaiting = 'awaiting'
-    canceled = 'canceled'
+class ArticleCategory(Base):
+    __tablename__ = "article_categories"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    articles = relationship("Article", back_populates="category")
 
 
-class TradePoint(Base):
-    __tablename__ = 'trade_points'
+class Article(Base):
+    __tablename__ = "articles"
 
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True, nullable=False)
+    description = Column(String, nullable=False)
+    link = Column(String, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(DateTime,
+                        default=func.now(),
+                        onupdate=func.now(),
+                        nullable=False)
+    category_id = Column(Integer,
+                         ForeignKey("article_categories.id"),
+                         nullable=False)
+    category = relationship("ArticleCategory", back_populates="articles")
+    authors = relationship("UserArticle", back_populates="article")
+
+
+class User(SQLAlchemyBaseUserTable[int], Base):
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
+    email = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    hashed_password: str = Column(String(length=1024), nullable=False)
+    is_active: bool = Column(Boolean, default=True, nullable=False)
+    is_superuser: bool = Column(Boolean, default=False, nullable=False)
+    is_verified: bool = Column(Boolean, default=False, nullable=False)
+    articles = relationship("UserArticle", back_populates="user")
 
 
-class Worker(Base):
-    __tablename__ = 'workers'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
-    phone_number = Column(String(255), nullable=False)
-    trade_point_id = Column(
-        Integer, ForeignKey('trade_points.id'), nullable=False)
-    is_blocked = Column(Boolean, default=False)
-    visits = relationship("Visit", backref="executor", lazy=True)
-    orders = relationship("Order", backref="author", lazy=True)
-
-    def __str__(self):
-        return str(self.name)
-
-
-customer_trade_points = Table(
-    'customer_trade_points', Base.metadata,
-    Column('customer_id', Integer, ForeignKey('customers.id')),
-    Column('trade_point_id', Integer, ForeignKey('trade_points.id'))
-)
-
-
-class Customer(Base):
-    __tablename__ = 'customers'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
-    phone_number = Column(String(255), nullable=False)
-    customer_orders = relationship("Order", backref="customer", lazy=True)
-    visits = relationship("Visit", backref="customer", lazy=True)
-    trade_points = relationship(
-        "TradePoint",
-        secondary=customer_trade_points,
-        backref="customers"
-    )
-
-    def __str__(self):
-        return str(self.name)
-
-
-class Order(Base):
-    __tablename__ = 'orders'
-
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    ended_at = Column(DateTime)
-    where_id = Column(Integer, ForeignKey('trade_points.id'), nullable=False)
-    author_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
-    status = Column(Enum(OrderStatus), nullable=False)
-    executor_id = Column(Integer, ForeignKey('workers.id'))
-    visits = relationship("Visit", backref="order", uselist=False, lazy=True)
-
-    def __str__(self):
-        return str(self.created_at)
-
-
-class Visit(Base):
-    __tablename__ = 'visits'
-
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    executor_id = Column(Integer, ForeignKey('workers.id'), nullable=False)
-    order_id = Column(Integer, ForeignKey('orders.id'), nullable=False)
-    author_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
-    where_id = Column(Integer, ForeignKey('trade_points.id'), nullable=False)
-
-    def __str__(self):
-        return str(self.created_at)
+class UserArticle(Base):
+    __tablename__ = "user_article"
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    article_id = Column(Integer, ForeignKey("articles.id"), primary_key=True)
+    user = relationship("User", back_populates="articles")
+    article = relationship("Article", back_populates="authors")
