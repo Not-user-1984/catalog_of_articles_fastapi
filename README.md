@@ -11,7 +11,7 @@ docker-compose up -d --build
 через swagger и тестить.
 
 ```
-http://localhost:8000/docs
+http://127.0.0.1:8000/docs
 ```
 
 
@@ -19,14 +19,13 @@ http://localhost:8000/docs
 Без паролей, есть поиск и сортировки.
 
 ```
-http://localhost:8000/admin/
+http://127.0.0.1t:8000/admin/
 ```
 <br>
 <br>
 
 
-При сборке уже сгенерировалась тестовые данные,
-есть 
+При сборке уже сгенерировалась тестовые данные 
 <br>
 <br>
 
@@ -34,7 +33,7 @@ http://localhost:8000/admin/
 ### регистрация
 
 ```
-http://localhost:8000/auth/register
+http://127.0.0.1:8000/auth/register
 
 {
   "email": "test@testov",
@@ -54,7 +53,7 @@ http://127.0.0.1:8000/auth/jwt/login
 
 в postman body > from-data
 передать 
-username = email # не много криво, но там былы задумка с расссылкой по email
+username = email # немного криво, но там былы задумка с расссылкой по email
 password = password
 
 ```
@@ -74,3 +73,29 @@ http://127.0.0.1:8000/articles/
   "link": "string3dd",
   "category_id": 1
 }
+```
+
+
+### другие запросы 
+токен в запрос postman
+
+```
+get
+http://127.0.0.1:8000/articles/?limit=2 
+все статьи с лимитом
+
+get
+http://127.0.0.1:8000/article_categories/
+все категории
+
+post
+http://127.0.0.1:8000/article_categories/
+создать категорию
+{
+  "name": "test"  # поля уникальные
+}
+
+остальные put, delete
+можно посмотреть 
+http://127.0.0.1:8000/docs
+```
