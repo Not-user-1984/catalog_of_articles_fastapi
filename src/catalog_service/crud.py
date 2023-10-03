@@ -77,12 +77,17 @@ async def get_article(db: AsyncSession, article_id: int):
     return article.scalar_one_or_none()
 
 
-async def get_articles(db: AsyncSession):
+async def get_articles(db: AsyncSession,
+                       skip: int = 0,
+                       limit: int = 10
+                       ):
     articles = await db.execute(
         select(
             Article,
             User.username,
             ArticleCategory.name)
+        .offset(skip)
+        .limit(limit)
     )
     result = articles.all()
 

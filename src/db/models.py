@@ -23,9 +23,9 @@ class ArticleCategory(Base):
 class Article(Base):
     __tablename__ = "articles"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True, nullable=False)
-    description = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True, index=True,)
+    title = Column(String, index=True, nullable=False, unique=True)
+    description = Column(String, nullable=False, unique=True)
     link = Column(String, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime,

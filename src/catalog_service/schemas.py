@@ -51,6 +51,6 @@ class ArticleRequest(ArticleCreate):
     pass
 
 
-class ArticleResponse(Article):
+class ArticleResponse(ArticleCreate):
     authors: List[UserArticle]
 
