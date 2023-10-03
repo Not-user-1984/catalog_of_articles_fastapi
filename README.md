@@ -1,4 +1,4 @@
-# shop_visits_fastapi
+# catalog_of_articles_fastapi
 ### запуск
 ```
 git clone git@github.com:Not-user-1984/catalog_of_articles_fastapi.git
