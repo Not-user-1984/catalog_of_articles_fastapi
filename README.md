@@ -68,8 +68,8 @@ password = password
 http://127.0.0.1:8000/articles/
 
 {
-  "title": test",          # поля уникальные
-  "description": "test",   # поля уникальные
+  "title": test",          # полe уникальнoe
+  "description": "test",   # полe уникальнoe
   "link": "string3dd",
   "category_id": 1
 }
@@ -92,7 +92,7 @@ post
 http://127.0.0.1:8000/article_categories/
 создать категорию
 {
-  "name": "test"  # поля уникальные
+  "name": "test"  # полe уникальнoe
 }
 
 остальные put, delete
