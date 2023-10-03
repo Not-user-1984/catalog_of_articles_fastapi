@@ -4,7 +4,7 @@ services:
     image: postgres:13.0-alpine
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -12,16 +12,16 @@ services:
     env_file:
       - ./.env
 
-  # backend:
-  #   container_name: backend
-  #   build:
-  #     context: ../.
-  #     dockerfile: Dockerfile
-  #   expose:
-  #     - 8000
-  #   ports:
-  #     - "8000:8000" 
-  #   restart: always
-  #   command: ["/shop_visits_fastapi/docker_shop_visit/app.sh"]
-  #   depends_on:
-  #     - db
+  backend:
+    container_name: backend
+    build:
+      context: ../.
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    ports:
+      - "8000:8000" 
+    restart: always
+    command: ["/catalog_of_articles_fastapi/docker/app.sh"]
+    depends_on:
+      - db
