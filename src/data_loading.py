@@ -28,9 +28,9 @@ def create_users(session):
 
 def create_categories(session):
     categories = []
-    for _ in range(25):
+    for i in range(25):
         category = ArticleCategory(
-            name=fake.word(),
+            name=fake.word() + str(i),
         )
         categories.append(category)
 
@@ -39,12 +39,12 @@ def create_categories(session):
 
 
 def create_articles(session, users, categories):
-    for _ in range(250):
+    for i in range(250):
         user = random.choice(users)
         category = random.choice(categories)
         article = Article(
-            title=fake.sentence(),
-            description=fake.paragraph(),
+            title=fake.sentence() + str(i),
+            description=fake.paragraph() + str(i),
             link=fake.url(),
             created_at=fake.date_time_this_decade(),
             updated_at=fake.date_time_this_decade(),

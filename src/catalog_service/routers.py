@@ -92,8 +92,11 @@ async def create_article_endpoint(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(curred_user),
 ):
-    await permissions.check_authorization(user)
-    return await crud.create_article(db, article, user.id)
+    try:
+        await permissions.check_authorization(user)
+        return await crud.create_article(db, article, user.id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/articles/{article_id}",
