@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import (TIMESTAMP, Boolean, Column, DateTime, ForeignKey,
-                        Integer, String, Table)
+                        Integer, String,)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -15,6 +15,9 @@ class ArticleCategory(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     articles = relationship("Article", back_populates="category")
+
+    def __str__(self):
+        return str(self.name)
 
 
 class Article(Base):
@@ -33,7 +36,8 @@ class Article(Base):
                          ForeignKey("article_categories.id"),
                          nullable=False)
     category = relationship("ArticleCategory", back_populates="articles")
-    authors = relationship("UserArticle", back_populates="article")
+    authors = relationship("UserArticle", back_populates="article",
+                           cascade="all, delete-orphan")
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -55,3 +59,6 @@ class UserArticle(Base):
     article_id = Column(Integer, ForeignKey("articles.id"), primary_key=True)
     user = relationship("User", back_populates="articles")
     article = relationship("Article", back_populates="authors")
+
+    def __str__(self):
+        return str(self.user_id)

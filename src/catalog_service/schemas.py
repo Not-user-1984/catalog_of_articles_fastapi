@@ -1,22 +1,25 @@
 from pydantic import BaseModel
 
+from typing import List
 
-# Схема для создания категории статьи
+
+class UserArticle(BaseModel):
+    user_id: int
+    article_id: int
+
+
 class ArticleCategoryCreate(BaseModel):
     name: str
 
 
-# Схема для обновления категории статьи
 class ArticleCategoryUpdate(BaseModel):
     name: str
 
 
-# Схема для категории статьи
 class ArticleCategory(ArticleCategoryCreate):
     id: int
 
 
-# Схема для создания статьи
 class ArticleCreate(BaseModel):
     title: str
     description: str
@@ -24,28 +27,30 @@ class ArticleCreate(BaseModel):
     category_id: int
 
 
-# Схема для обновления статьи
 class ArticleUpdate(BaseModel):
     title: str
     description: str
     link: str
 
 
-# Схема для статьи
 class Article(ArticleCreate):
     id: int
+    category: str
+    author: str
 
 
-# Схемы для запросов и ответов CRUD операций с категорией статьи
 class ArticleCategoryRequest(ArticleCategoryCreate):
     pass
+
 
 class ArticleCategoryResponse(ArticleCategory):
     pass
 
-# Схемы для запросов и ответов CRUD операций со статьей
+
 class ArticleRequest(ArticleCreate):
     pass
 
+
 class ArticleResponse(Article):
-    pass
+    authors: List[UserArticle]
+

@@ -1,12 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
-from db.models import ArticleCategory, Article
+from db.models import ArticleCategory, Article, UserArticle, User
 
 from . import schemas
 
 
-# Создать категорию статьи
 async def create_article_category(
         db: AsyncSession,
         category: schemas.ArticleCategoryCreate):
@@ -25,7 +24,6 @@ async def create_article_category(
     return db_category
 
 
-# Получить категорию статьи по ID
 async def get_article_category(db: AsyncSession, category_id: int):
     category = await db.execute(
         select(ArticleCategory).where(ArticleCategory.id == category_id)
@@ -33,13 +31,11 @@ async def get_article_category(db: AsyncSession, category_id: int):
     return category.scalar_one_or_none()
 
 
-# Получить список всех категорий статей
 async def get_article_categories(db: AsyncSession):
     categories = await db.execute(select(ArticleCategory))
     return categories.scalars().all()
 
 
-# Обновить информацию о категории статьи
 async def update_article_category(
         db: AsyncSession,
         category_id: int,
@@ -53,7 +49,6 @@ async def update_article_category(
     return db_category
 
 
-# Удалить категорию статьи
 async def delete_article_category(db: AsyncSession, category_id: int):
     db_category = await get_article_category(db, category_id)
     if db_category:
@@ -62,19 +57,19 @@ async def delete_article_category(db: AsyncSession, category_id: int):
     return db_category
 
 
-# Создать статью
 async def create_article(
         db: AsyncSession,
-        article: schemas.ArticleCreate):
+        article: schemas.ArticleCreate,
+        user_id: int):
 
-    db_article = Article(**article.dict())
+    db_article = Article(
+        **article.dict(),
+        authors=[UserArticle(user_id=user_id)])
     db.add(db_article)
     await db.commit()
-    await db.refresh(db_article)
     return db_article
 
 
-# Получить статью по ID
 async def get_article(db: AsyncSession, article_id: int):
     article = await db.execute(
         select(Article).where(Article.id == article_id)
@@ -82,13 +77,33 @@ async def get_article(db: AsyncSession, article_id: int):
     return article.scalar_one_or_none()
 
 
-# Получить список всех статей
 async def get_articles(db: AsyncSession):
-    articles = await db.execute(select(Article))
-    return articles.scalars().all()
+    articles = await db.execute(
+        select(
+            Article,
+            User.username,
+            ArticleCategory.name)
+    )
+    result = articles.all()
+
+    articles_with_names = [
+        {
+            "id": article.id,
+            "title": article.title,
+            "description": article.description,
+            "link": article.link,
+            "created_at": article.created_at,
+            "updated_at": article.updated_at,
+            "category_id": article.category_id,
+            "category": name,
+            "author": username
+        }
+        for article, username, name in result
+    ]
+
+    return articles_with_names
 
 
-# Обновить информацию о статье
 async def update_article(
         db: AsyncSession,
         article_id: int,
@@ -102,7 +117,6 @@ async def update_article(
     return db_article
 
 
-# Удалить статью
 async def delete_article(db: AsyncSession, article_id: int):
     db_article = await get_article(db, article_id)
     if db_article:

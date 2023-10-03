@@ -16,6 +16,7 @@ class Settings:
     DATABASE_URL: str = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}?async_fallback=True"
     app_title: str = 'catalog_of_articles_fastapi'
     description: str = 'catalog_of_articles_fastapi'
+    SECRET_AUTH: str = os.getenv("SECRET_AUTH", "hjhjhfg131425ubjbjb")
 
 
 settings = Settings()
