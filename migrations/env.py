@@ -2,15 +2,14 @@ import os
 import sys
 
 sys.path.append(os.path.join(sys.path[0], 'src'))
-from src.db.database import Base, get_async_session
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from src.db.models import *
 from src.config import settings
-
+from src.db.database import Base, get_async_session
+from src.db.models import *
 
 config = context.config
 section = config.config_ini_section

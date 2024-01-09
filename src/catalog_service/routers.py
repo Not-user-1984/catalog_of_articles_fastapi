@@ -119,9 +119,9 @@ async def read_articles_endpoint(
     skip: int = Query(0, description="Skip this many items"),
     limit: int = Query(10, description="Limit the number of items returned"),
     db: AsyncSession = Depends(get_async_session),
-    user: User = Depends(curred_user),
+    # user: User = Depends(curred_user),
 ):
-    await permissions.check_authorization(user)
+    # await permissions.check_authorization(user)
     articles = await crud.get_articles(db, skip=skip, limit=limit)
     return articles
 

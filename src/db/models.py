@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import (TIMESTAMP, Boolean, Column, DateTime, ForeignKey,
                         Integer, String,)
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
